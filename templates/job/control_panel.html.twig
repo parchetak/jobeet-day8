@@ -1,0 +1,52 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <span class="navbar-brand mb-0 h1">Control Panel:</span>
+
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <form class="form-inline">
+            {{ form_start(deleteForm) }}
+            {{ form_widget(deleteForm) }}
+            <button  class="btn btn-outline-danger" type="submit" onclick="return confirm('Are you sure?')">
+                <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+                Delete
+            </button>
+        {{ form_end(deleteForm) }}
+        </form>
+        {% if job.activated %}
+            {% if job.expiresAt < date() %}
+                <span class="navbar-text"> Expired </span>
+            {% else %}
+                <span class="navbar-text"> Expires in <strong>{{ job.expiresAt.diff(date())|date('%a') }}</strong> days</span>
+            {% endif %}
+
+            {% if job.expiresAt.diff(date())|date('%a') < 5 %}
+                <a class="btn btn-success navbar-btn" href="#">
+                    <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
+                    Extend (for another 30 days)
+                </a>
+            {% endif %}
+        {% else %}
+            <span class="navbar-text">
+                <a class="" href="{{ path('job.edit', { 'token': job.token }) }}">
+                    <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
+                    Edit
+                </a>
+            </span>
+            <form class="form-inline">
+                {{ form_start(publishForm, {'attr': {'class': 'navbar-form navbar-left'}}) }}
+                {{ form_widget(publishForm) }}
+                <button type="submit" class="btn btn-default">
+                    <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+                    Publish
+                </button>
+                {{ form_end(publishForm) }}
+            </form>
+        {% endif %}
+        <span class="navbar-text ml-auto">
+            [Bookmark this <a href="{{ url('job.preview', {token: job.token}) }}">URL</a> to manage this job in the future]
+        </span>
+    </div>
+</nav>
